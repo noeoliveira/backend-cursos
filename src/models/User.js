@@ -32,4 +32,14 @@ const User = new mongoose.Schema(
 	{ timestamps: true }
 );
 
+User.pre('save', function(next) {
+	const salt = crypto.randomBytes(16).toString('base64');
+	const hash = crypto
+		.pbkdf2Sync(this.password, salt, 1024, 64, 'sha512')
+		.toString('base64');
+
+	this.password = [salt, hash].join('$');
+	next();
+});
+
 module.exports = mongoose.model('User', User);

@@ -22,4 +22,7 @@ routes.get('/boxes/:id/files/:idFile?', FileController.show);
 //Routes User
 routes.post('/user', UserController.store);
 
+//Ruotes Auth
+routes.post('/auth', UserController.auth);
+
 module.exports = routes;
