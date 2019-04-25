@@ -21,6 +21,7 @@ routes.get('/boxes/:id/files/:idFile?', FileController.show);
 
 //Routes User
 routes.post('/user', UserController.store);
+routes.get('/user', UserController.show);
 
 //Ruotes Auth
 routes.post('/auth', UserController.auth);

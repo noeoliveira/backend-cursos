@@ -16,6 +16,12 @@ class UserController {
 		return res.json({ user, token });
 	}
 
+	async show(req, res) {
+		const { userId } = req;
+		const user = await User.findOne({ userId });
+		return res.json(user);
+	}
+
 	async auth(req, res) {
 		const { email, password } = req.body;
 
@@ -27,6 +33,7 @@ class UserController {
 		user.password = undefined;
 
 		const token = genereteToken({ id: user.id });
+		console.log(user);
 
 		return res.json({ user, token });
 	}
@@ -44,9 +51,7 @@ function verifyHash(password, passwordEncrypted) {
 
 function genereteToken(params = {}) {
 	return jwt.sign(params, jwtConfig.secret, {
-		expiresIn: '1w',
-		algorithm: 'HS512',
-		encoding: 'base64'
+		expiresIn: '1w'
 	});
 }
 
