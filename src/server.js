@@ -11,7 +11,7 @@ mongoose.connect(
 	{ useNewUrlParser: true, autoReconnect: true }
 );
 
-app.use(require('./controllers/Auth'));
+app.use(require('./Middlewares/Auth'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

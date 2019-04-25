@@ -3,7 +3,6 @@ const jwtConfig = require('../config/auth');
 
 module.exports = (req, res, next) => {
 	const { authorization } = req.headers;
-	console.log(req);
 
 	if ('/user' === req.originalUrl || '/auth' === req.originalUrl) return next();
 
