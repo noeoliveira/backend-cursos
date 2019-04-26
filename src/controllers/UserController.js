@@ -33,7 +33,6 @@ class UserController {
 		user.password = undefined;
 
 		const token = genereteToken({ id: user.id });
-		console.log(user);
 
 		return res.json({ user, token });
 	}
