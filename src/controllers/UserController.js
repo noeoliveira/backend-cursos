@@ -10,6 +10,7 @@ class UserController {
 			error => error
 		);
 		user.password = undefined;
+		if (!user.teach) user.myCourse = undefined;
 
 		const token = genereteToken({ id: user.id });
 
@@ -18,8 +19,12 @@ class UserController {
 
 	async show(req, res) {
 		const { userId } = req;
-		const user = await User.findOne({ userId });
-		return res.json(user);
+		const user = await User.findOne({ _id: userId });
+
+		if (!user.teach) user.myCourse = undefined;
+
+		const token = genereteToken({ id: user.id });
+		return res.json({ user, token });
 	}
 
 	async auth(req, res) {
@@ -31,6 +36,7 @@ class UserController {
 			return res.json({ error: 'Email and Password do not match' });
 
 		user.password = undefined;
+		if (!user.teach) user.myCourse = undefined;
 
 		const token = genereteToken({ id: user.id });
 

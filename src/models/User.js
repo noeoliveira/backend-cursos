@@ -24,10 +24,9 @@ const User = new mongoose.Schema(
 			type: Boolean,
 			default: false
 		},
-		list: {
-			myCourse: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Box' }],
-			course: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Box' }]
-		}
+
+		myCourse: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Box' }],
+		course: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Box' }]
 	},
 	{ timestamps: true }
 );
