@@ -25,19 +25,21 @@ const User = new mongoose.Schema(
 			default: false
 		},
 
-		myCourse: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Box' }],
-		course: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Box' }]
+		myCourse: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Curso' }],
+		course: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Curso' }]
 	},
 	{ timestamps: true }
 );
 
 User.pre('save', function(next) {
-	const salt = crypto.randomBytes(16).toString('base64');
-	const hash = crypto
-		.pbkdf2Sync(this.password, salt, 1024, 64, 'sha512')
-		.toString('base64');
+	if (this.password) {
+		const salt = crypto.randomBytes(16).toString('base64');
+		const hash = crypto
+			.pbkdf2Sync(this.password, salt, 1024, 64, 'sha512')
+			.toString('base64');
 
-	this.password = [salt, hash].join('$');
+		this.password = [salt, hash].join('$');
+	}
 	next();
 });
 

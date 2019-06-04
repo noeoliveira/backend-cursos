@@ -3,25 +3,27 @@ const routes = express.Router();
 const multer = require('multer');
 const multerConfig = require('./config/multer');
 
-const BoxController = require('./controllers/BoxController');
-const FileController = require('./controllers/FileController');
+const CursoController = require('./controllers/CursoController');
+const AulaController = require('./controllers/AulaController');
 const UserController = require('./controllers/UserController');
 
 //Routes Box
-routes.post('/boxes', BoxController.store);
-routes.get('/boxes/:id?', BoxController.show);
+routes.post('/cursos', CursoController.store);
+routes.get('/cursos/:id?', CursoController.show);
 
 //Routes File
 routes.post(
-	'/boxes/:id/files',
+	'/cursos/:id/aulas',
 	multer(multerConfig).single('file'),
-	FileController.store
+	AulaController.store
 );
-routes.get('/boxes/:id/files/:idFile?', FileController.show);
+routes.get('/cursos/:id/aulas/:idFile?', AulaController.show);
 
 //Routes User
 routes.post('/user', UserController.store);
 routes.get('/user', UserController.show);
+routes.put('/user', UserController.update);
+routes.post('/save', UserController.save);
 
 //Ruotes Auth
 routes.post('/auth', UserController.auth);
