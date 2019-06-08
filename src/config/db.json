@@ -1,0 +1,8 @@
+{
+	"database": "9CDbUjg5yk",
+	"user": "9CDbUjg5yk",
+	"password": "oLEsCLTEMp",
+	"server": "remotemysql.com",
+	"port": 3306,
+	"dialect": "mysql"
+}

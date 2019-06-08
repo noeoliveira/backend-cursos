@@ -1,15 +1,11 @@
 const express = require('express');
 const app = express();
-const mongoose = require('mongoose');
 const path = require('path');
 const cors = require('cors');
 
-app.use(cors());
+const db = require('./services/database');
 
-mongoose.connect(
-	'mongodb+srv://rwfile:rwfile@drivefile-loeda.mongodb.net/Files?retryWrites=true',
-	{ useNewUrlParser: true, autoReconnect: true }
-);
+app.use(cors());
 
 app.use(require('./Middlewares/Auth'));
 

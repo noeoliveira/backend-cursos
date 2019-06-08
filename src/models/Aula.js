@@ -1,20 +1,26 @@
-const mongoose = require('mongoose');
-const Aula = new mongoose.Schema(
-	{
+module.exports = (sequelize, DataType) => {
+	const Aula = sequelize.define('Aula', {
 		title: {
-			type: String,
-			required: true
+			type: DataType.STRING,
+			allowNull: false,
+			validate: {
+				notEmpty: true
+			}
 		},
 		path: {
-			type: String,
-			required: true
+			type: DataType.TEXT,
+			allowNull: false,
+			validate: {
+				notEmpty: true
+			}
+		},
+		url: {
+			type: DataType.VIRTUAL,
+			get: () => {
+				const url = process.env.URL || 'http://localhost:3333';
+				return `${url}/files/${encodeURIComponent(this.path)}`;
+			}
 		}
-	},
-	{ timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
-);
-
-Aula.virtual('url').get(function() {
-	const url = process.env.URL || 'http://localhost:3333';
-	return `${url}/files/${encodeURIComponent(this.path)}`;
-});
-module.exports = mongoose.model('Aula', Aula);
+	});
+	return Aula;
+};

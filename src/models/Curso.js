@@ -1,13 +1,17 @@
-const mongoose = require('mongoose');
-const Curso = new mongoose.Schema(
-	{
+module.exports = (sequelize, DataType) => {
+	const Curso = sequelize.define('Curso', {
 		title: {
-			type: String,
-			required: true
-		},
-		files: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Aula' }]
-	},
-	{ timestamps: true }
-);
+			type: DataType.STRING,
+			allowNull: false,
+			validate: {
+				notEmpty: true
+			}
+		}
+	});
 
-module.exports = mongoose.model('Curso', Curso);
+	Curso.associate = models => {
+		Curso.hasMany(models.Aula);
+	};
+
+	return Curso;
+};
