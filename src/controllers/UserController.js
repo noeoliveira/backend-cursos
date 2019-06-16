@@ -1,5 +1,5 @@
-const User = require('../models/User');
-const Box = require('../models/Curso');
+const { User, Curso } = require('../services/database').models;
+
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const jwtConfig = require('../config/auth');
@@ -7,11 +7,14 @@ const jwtConfig = require('../config/auth');
 class UserController {
 	async store(req, res) {
 		const { name, email, password } = req.body;
-		const user = await User.create({ name, email, password }).catch(
-			error => error
-		);
-		user.password = undefined;
-		if (!user.teach) user.myCourse = undefined;
+		const user = await User.create({
+			name,
+			email,
+			password
+		}).catch(error => error);
+
+		if (user.errors) return res.json({ message: user.errors[0].message });
+		user.dataValues.password = undefined;
 
 		const token = genereteToken({ id: user.id });
 
@@ -20,46 +23,38 @@ class UserController {
 
 	async show(req, res) {
 		const { userId, token } = req;
-		const user = await User.findOne({ _id: userId })
-			.populate({
-				path: 'myCourse',
-				options: { sort: { createdAt: -1 } }
-			})
-			.populate({
-				path: 'course',
-				options: { sort: { createdAt: -1 } }
-			});
+		const user = await User.findOne({
+			where: { id: userId },
+			include: [{ all: true }]
+		});
 
-		if (!user.teach) user.myCourse = undefined;
+		if (user.errors) return res.json({ message: user.errors[0].message });
+
+		if (!user.dataValues.teach || !user.dataValues.Curso)
+			user.dataValues.Curso = undefined;
 
 		return res.json({ user, token });
 	}
 
 	async update(req, res) {
-		const { name, email, password, teach } = req.body;
-		const user = await User.findOne({ _id: req.userId }).select('+password');
+		const user = await User.findOne({ where: { id: req.userId } });
 
-		if (name) user.name = name;
-		if (email) user.email = email;
-		if (password) user.password = password;
-		if (teach) user.teach = teach;
+		await user.update(req.body);
 
-		await user.save();
-
-		user.password = undefined;
+		user.dataValues.password = undefined;
 		return res.json(user);
 	}
 
 	async auth(req, res) {
 		const { email, password } = req.body;
 
-		const user = await User.findOne({ email }).select('+password');
+		const user = await User.scope('password').findOne({ where: { email } });
 
-		if (!user || !verifyHash(password, user.password))
+		if (!user || !verifyHash(password, user.dataValues.password))
 			return res.json({ error: 'Email and Password do not match' });
 
-		user.password = undefined;
-		if (!user.teach) user.myCourse = undefined;
+		user.dataValues.password = undefined;
+		//if (!user.teach) user.myCourse = undefined;
 
 		const token = genereteToken({ id: user.id });
 
@@ -67,20 +62,22 @@ class UserController {
 	}
 
 	async save(req, res) {
-		const { teach, boxId } = req.body;
-		const user = await User.findOne({ _id: req.userId });
-		//const box = await Box.findOne({ _id: boxId });
+		const { cursoId: CursoId } = req.body;
+		let user = await User.findOne({
+			where: { id: req.userId },
+			include: [
+				{ model: Curso, as: 'Curso' },
+				{ model: Curso, as: 'meusCursos', through: { attributes: [] } }
+			]
+		});
 
-		if (teach && user.teach) {
-			user.myCourse.push(boxId);
-		} else if (teach && !user.teach) {
-			return res.json({ error: 'User not teach' });
-		} else {
-			user.course.push(boxId);
+		if (await user.hasMeusCursos(parseInt(CursoId))) {
+			return res.json({ message: 'Já possui esse curso' });
 		}
-		console.log(user);
 
-		await user.save();
+		const novo = await user.addMeusCursos(CursoId);
+		user.meusCursos.push(novo[0]);
+
 		return res.json(user);
 	}
 }

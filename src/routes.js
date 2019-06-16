@@ -7,11 +7,11 @@ const CursoController = require('./controllers/CursoController');
 const AulaController = require('./controllers/AulaController');
 const UserController = require('./controllers/UserController');
 
-//Routes Box
+//Routes Curso
 routes.post('/cursos', CursoController.store);
 routes.get('/cursos/:id?', CursoController.show);
 
-//Routes File
+//Routes Aula
 routes.post(
 	'/cursos/:id/aulas',
 	multer(multerConfig).single('file'),

@@ -10,7 +10,7 @@ module.exports = (sequelize, DataType) => {
 	});
 
 	Curso.associate = models => {
-		Curso.hasMany(models.Aula);
+		Curso.hasMany(models.Aula, { as: 'Aulas' });
 	};
 
 	return Curso;

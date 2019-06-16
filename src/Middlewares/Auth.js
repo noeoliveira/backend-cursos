@@ -3,10 +3,18 @@ const jwtConfig = require('../config/auth');
 
 module.exports = (req, res, next) => {
 	const { authorization } = req.headers;
-	if (req.method === 'POST')
-		if ('/user' === req.originalUrl || '/auth' === req.originalUrl)
+	if (req.method === 'POST') {
+		if ('/user' === req.originalUrl || '/auth' === req.originalUrl) {
 			return next();
-
+		}
+	}
+	if (req.method === 'GET') {
+		if ('/cursos' === req.originalUrl) {
+			if (!req.params.id) {
+				return next();
+			}
+		}
+	}
 	if (!authorization)
 		return res.status(401).json({ error: 'No token provided' });
 

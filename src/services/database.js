@@ -14,8 +14,11 @@ const loadModels = sequelize => {
 		if (models[model].associate) {
 			models[model].associate(models);
 		}
+		if (models[model].get) {
+			models[model].get();
+		}
 	});
-	return models;
+	return sequelize.models;
 };
 
 let database = null;
@@ -34,14 +37,7 @@ if (!database) {
 	database = { sequelize, Sequelize, models: {} };
 	database.models = loadModels(sequelize);
 
-	sequelize.sync({ force: true }).then(() => {
-		database.models.User.create({
-			name: 'teste',
-			email: 'noe.oliveira1995@gmail.com',
-			password: '123456'
-		});
-		database.models.Curso.create({ title: 'teste', UserId: 1 });
-	});
+	sequelize.sync().then(() => console.log('\nConected database'));
 }
 
 module.exports = database;

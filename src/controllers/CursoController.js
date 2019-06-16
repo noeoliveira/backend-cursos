@@ -1,23 +1,41 @@
-const Curso = require('../models/Curso');
+const { Curso, Aula } = require('../services/database').models;
 
 class CursoController {
 	async store(req, res) {
-		const curso = await Curso.create({ title: req.body.title });
+		const { userId: UserId } = req;
+		const curso = await Curso.create({ title: req.body.title, UserId });
+
 		return res.json(curso);
 	}
 
 	async show(req, res) {
 		let curso;
+		const { id } = req.params;
 
 		if (req.params.id) {
-			curso = await Curso.findById(req.params.id).populate({
-				path: 'files',
-				options: { sort: { createdAt: -1 } }
+			curso = await Curso.findOne({
+				where: { id },
+				include: [
+					{
+						model: Aula,
+						as: 'Aulas',
+						attributes: {
+							exclude: ['url', 'path', 'createdAt', 'updatedAt', 'CursoId']
+						}
+					}
+				]
 			});
 		} else {
-			curso = await Curso.find({}).populate({
-				path: 'files',
-				options: { sort: { createdAt: -1 } }
+			curso = await Curso.findAll({
+				include: [
+					{
+						model: Aula,
+						as: 'Aulas',
+						attributes: {
+							exclude: ['url', 'path', 'createdAt', 'updatedAt', 'CursoId']
+						}
+					}
+				]
 			});
 		}
 

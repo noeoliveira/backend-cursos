@@ -1,8 +1,5 @@
 const crypto = require('crypto');
-/*
-		myCourse: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Curso' }],
-		course: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Curso' }]
-	}*/
+
 module.exports = (sequelize, DataType) => {
 	const User = sequelize.define(
 		'User',
@@ -17,6 +14,7 @@ module.exports = (sequelize, DataType) => {
 			email: {
 				type: DataType.STRING,
 				allowNull: false,
+				unique: true,
 				validate: {
 					notEmpty: true,
 					isEmail: true
@@ -45,12 +43,24 @@ module.exports = (sequelize, DataType) => {
 				defaultValue: false
 			}
 		},
-		{ sequelize }
+		{
+			defaultScope: {
+				attributes: { exclude: ['password', 'UserCurso'] }
+			},
+			scopes: {
+				password: {
+					attributes: {}
+				}
+			}
+		}
 	);
 
 	User.associate = models => {
-		User.hasOne(models.Curso);
-		User.belongsToMany(models.Curso, { through: 'UserCurso' });
+		User.hasMany(models.Curso, { as: 'Curso' });
+		User.belongsToMany(models.Curso, {
+			as: 'meusCursos',
+			through: 'UserCurso'
+		});
 	};
 
 	return User;
